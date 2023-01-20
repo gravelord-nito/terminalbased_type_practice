@@ -23,15 +23,17 @@ struct user{ // user info
 }player, vlayer; // player is the currently playing user and vlayer is an assisstant variable (to use in files and stuff)
 
 void my_callback_on_key_arrival(char c);   // this func being called every time a key is stroked after start listening
-void login();                              // signs an existing account or adds a new one
+void login();                              // signs in an existing account or adds a new one
 bool user_exists(char *username);          // checks if there exists any user with the given username in file and sets it to player if so
 void new_game();                           // player chooses one of his 3 save slots; then chooses if he wants to overwrite the save or continue it ( in which this save's score will be increased )
 char* rwg(int l, int r, bool ishard);      // rwg stands for random word generator and generates a random of size [l,r)
 
 int SCORE = 0, N = 0, V; // N is number of linked list nodes and V will be the save slot number after starting the game
 float Y;                 // Current wave's time
+int I = 0;               // hardness of words given in the current wave
 int HAND = 0;            // HAND to play one handed { 0 for both, 1 for left, 2 for right }
 bool LCASE = 1;          // LCASE: letter case { 0 lowercase, 1 both lower and upper }
+FILE* WORDS_FILE[3];     // for which { 0 are easy words, 1 long words, 2 hard words }
 char KEYS[] = "12345qwertasdfgzxcvb67890yuiophjkl;nm,./" ;
 char UNICASE[] = "1234567890;,./";
 char HARDKEYS[] = "!@$%%*?-+";
@@ -48,11 +50,18 @@ BYTE* hash(char* s, char* SALT){ // using sha256 hash function
     return buff;
 }
 
-int main(){
+int main()
+{
     time_t T=time(NULL);
     srand((unsigned) time(&T));
 
-    login(); new_game();
+    //login(); new_game();
+
+    // make word files
+    WORDS_FILE[0] = fopen("words0.txt","w"); for(int i=0;i<100;i++) fprintf(WORDS_FILE[0],"%s\n", rwg(1,11,0)); fclose(WORDS_FILE[0]);
+    WORDS_FILE[1] = fopen("words1.txt","w"); for(int i=0;i<100;i++) fprintf(WORDS_FILE[1],"%s\n", rwg(10,21,0)); fclose(WORDS_FILE[1]);
+    WORDS_FILE[2] = fopen("words2.txt","w"); for(int i=0;i<100;i++) fprintf(WORDS_FILE[2],"%s\n", rwg(1,21,1)); fclose(WORDS_FILE[2]);
+    return 0;
 
     HANDLE thread_id = start_listening(my_callback_on_key_arrival);
 
