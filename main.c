@@ -127,7 +127,6 @@ int main()
     WORDS_FILE[2] = fopen("words2.txt","r");
     bool lose_flag = 0;
     for(char new_word[24];W<=7-player.dif[V];W++, Y*=DY[player.dif[V]-1]){
-        break;
         // set word difficulty
         switch(player.dif[V]){
             case(1):
