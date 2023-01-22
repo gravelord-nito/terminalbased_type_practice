@@ -21,7 +21,7 @@ const int   ITER   = 205;
 
 struct User{ // User info
     char username[32], SALT[5]; BYTE password[SHA256_BLOCK_SIZE]; // max length of username is 32 and password is a 32 byte hash digest
-    int dif[3]; int score[3], winstreak[3]; char time[3][255];   // difficulty, score, winstreak, last time played
+    int dif[3], score[3], winstreak[3]; char time[3][64];         // difficulty, score, winstreak, last time played
 }player, vlayer; // player is the currently playing User and vlayer is an assisstant variable (to use in files and stuff)
 
 struct Node{
@@ -106,9 +106,6 @@ int main()
     struct tm tm = *localtime(&T);
     srand((unsigned) time(&T));
 
-    // innitialize player contents
-    for(int i=0;i<3;i++) player.dif[i] = player.score[i] = player.winstreak[i] = 0, strcpy(player.time[i],"0");
-
     // input game settings
     login(); new_game();
 
@@ -128,18 +125,20 @@ int main()
     WORDS_FILE[0] = fopen("words0.txt","r");
     WORDS_FILE[1] = fopen("words1.txt","r");
     WORDS_FILE[2] = fopen("words2.txt","r");
-    char new_word[24];
-    for(int ii=0;ii<7-player.dif[V];ii++){
+    bool lose_flag = 0;
+    for(char new_word[24];W<=7-player.dif[V];W++, Y*=DY[player.dif[V]-1]){
+        break;
         // set word difficulty
         switch(player.dif[V]){
             case(1):
-                if(ii==4) I++, ISVAGUE = 1;
+                if(W==5) I++, ISVAGUE = 1;
                 break;
             case(2):
-                if(ii>2) I++;
+                if(W>3) I++;
+                break;
             case(3):
                 ISVAGUE = 1;
-                if(ii>0 && ii<3) I++;
+                if(W>1 && W<4) I++;
                 break;
         }
         // add new wave to linked list
@@ -148,32 +147,34 @@ int main()
             push_front(new_word); CUR_LINE++;
             if(CUR->prev == NULL) CUR = CUR->next;
             if(N>HEIGHT){ // Lost the game
+                player.dif[V] = N = 0;
+                lose_flag = 1;
                 system("cls");
                 printf("\t\t\tYou Lost\n %s mode wave %d\tscore: 0\nPlay time: %.2lf seconds\tPrecision: %d%%\n",
                         difname(player.dif[V]), W,
                             (double)(clock()-START_TIME)/CLOCKS_PER_SEC, (int)((double)TCORRECT/(TCORRECT+TWRONG)*100));
-                player.dif[V] = N = 0; 
-                goto UPDATE_PHASE;
+                break;
             }
             draw_board();
             clock_t target = clock() + (Y/EY*EY) * CLOCKS_PER_SEC ;
             while( clock() < target && N );
             draw_board();
-        } W++;
-        // decrease add word interval
-        Y*=DY[player.dif[V]-1];
+        }
+        if(lose_flag) break;
     }
-    while(N);
-    system("cls");
-    printf("\t\t\tYou've reached a considerable speed in typing\n%s mode wave %d\tscore: %d\ttotal score: %d\nfinished in: %.2lf seconds\tPrecision: %d%%\n",
-            difname(player.dif[V]), W, SCORE, player.score[V] += SCORE,
-                    (double)(clock()-START_TIME)/CLOCKS_PER_SEC, (int)((double)TCORRECT/(TCORRECT+TWRONG)*100));
-    player.winstreak[V]++;
-    UPDATE_PHASE:
+    if(!lose_flag){
+        while(N);
+        sleep(1);
+        system("cls");
+        printf("\t\t\tYou've reached a considerable speed in typing\n%s mode wave %d\tscore: %d\ttotal score: %d\nfinished in: %.2lf seconds\tPrecision: %d%%\n",
+                difname(player.dif[V]), W, SCORE, player.score[V] += SCORE,
+                        (double)(clock()-START_TIME)/CLOCKS_PER_SEC, (int)((double)TCORRECT/(TCORRECT+TWRONG)*100));
+        player.winstreak[V]++;
+    }
     for(int i=0;i<3;i++) fclose(WORDS_FILE[i]);
 
     // update last time played
-    sprintf(player.time[V], "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    sprintf(player.time[V], "%d-%02d-%02d %02d:%02d:%02d\0", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     // update data.txt
     FILE* f1 = fopen("data.txt","r");
     FILE* f2 = fopen("tmp.txt","w");
@@ -182,7 +183,7 @@ int main()
     fclose(f1); fclose(f2);
     remove("data.txt"); rename("tmp.txt", "data.txt");
 
-    printf("Thanks for playing  "); for(int i=5;i;i--){ printf("\b%d",i); sleep(1); }
+    printf("Thanks for playing  "); for(int i=5;i>=0;i--){ printf("\b%d",i); sleep(1); }
     exit(0);
     WaitForSingleObject(thread_id,INFINITE);
     return 0;
@@ -295,12 +296,13 @@ void login(){ static char password[75];
         bool bb = User_exists(player.username);
         if(!bb){ // User doesn't exist
             if(V==1){ // siging in
-                printf("No player with that username\nWanna register?(y/n)"); scanf(" %c",&V);
-                V = ( V=='y' ? 2:1 );
+                printf("No player with that username\nWanna register?(y/n)"); scanf(" %c",&password[0]);
+                V = ( password[0]=='y' ? 2:1 );
             }
             else{ // registering
                 printf("password: "); scanf("%s", password);
                 memcpy(player.password, hash(password, strcpy(player.SALT, rwg(4,5,1))), SHA256_BLOCK_SIZE);
+                for(int i=0;i<3;i++) player.dif[i] = player.score[i] = player.winstreak[i] = 0, strcpy(player.time[i],"0");
                 break;
             }
         }
