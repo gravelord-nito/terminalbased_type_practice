@@ -21,7 +21,7 @@ const int   ITER   = 205;
 
 struct User{ // User info
     char username[32], SALT[5]; BYTE password[SHA256_BLOCK_SIZE]; // max length of username is 32 and password is a 32 byte hash digest
-    char dif[3]; int score[3], winstreak[3]; char time[3][255];   // difficulty, score, winstreak, last time played
+    int dif[3]; int score[3], winstreak[3]; char time[3][255];   // difficulty, score, winstreak, last time played
 }player, vlayer; // player is the currently playing User and vlayer is an assisstant variable (to use in files and stuff)
 
 struct Node{
