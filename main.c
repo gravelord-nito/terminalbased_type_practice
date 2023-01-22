@@ -55,8 +55,8 @@ const double DY[] ={
         0.8, 0.7, 0.6   }; // decrement rate of wave's time for each difficulty
 short int I = 1;           // hardness of words given in the current wave
 bool ISVAGUE = 0;          // to check if we could give a vague word
-int  HAND  = 0;            // HAND to play one handed { 0 for both, 1 for left, 2 for right }
-bool LCASE = 0;            // LCASE: letter case { 0 lowercase, 1 both lower and upper }
+int  HAND;                 // HAND to play one handed { 0 for both, 1 for left, 2 for right }
+bool LCASE;                // LCASE: letter case { 0 lowercase, 1 both lower and upper }
 
 const int WIDTH = 30, HEIGHT = 20;
 struct Node* CUR = &Head;  // CUR is the currently typing Node
