@@ -8,8 +8,8 @@
  void gotoxy(int x,int y);
 void gotoxy(int x,int y)//function to set the cursor position(gotoxy())
 {
-    coord.X=x;
-    coord.Y=y;
+    coord.X=y;
+    coord.Y=x;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
 }
 //.......................................................................................................................................................................
