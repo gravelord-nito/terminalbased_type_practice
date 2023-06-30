@@ -1,6 +1,6 @@
-# TBTP: terminal based type practice
+# TTP: terminal based typing practice
 Is a simple game to improve typing speed(complete random key pressing) written in C.
-Final project of Basic Programming university course.
+Final project of Basic Programming university course at [IUT](https://english.iut.ac.ir/).
 
 ## Usage
 Clone the repo and execute main.c
