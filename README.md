@@ -30,14 +30,9 @@ You can play one handed( left or right ) or both, you can play lowercase only or
 Almost all global variables are changable without any harm. By changing HEIGHT you could make the game easier or harder.
 
 ## Notable bonus codded stuff
--Added a hash function to save passwords more securely.
-
--Coded the linked list two-ways so that the player can move up and down( with arrow keys ) and type whichever word he wants, not just the last one.
-
--One handed mode, lowercase/ uppercase mode
-
--Pushed the project to github
-
--Backspace and correction of errors
-
--Few changes and extra parameters to make the game more logical and playable
+* Added a hash function to save passwords more securely.
+* Coded the linked list two-ways so that the player can move up and down( with arrow keys ) and type whichever word he wants, not just the last one.
+* One handed mode, lowercase/ uppercase mode
+* Pushed the project to github
+* Backspace and correction of errors
+* Few changes and extra parameters to make the game more logical and playable
